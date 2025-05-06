@@ -47,7 +47,7 @@ public class ProductionLine {
                 machine.update();
 
                 // 💥 Simulate scrap with 10% chance
-                boolean isScrapped = random.nextDouble() < 0.10;
+                boolean isScrapped = isProductScrapped(product);
                 if (isScrapped) {
                     System.out.printf("❌ %s scrapped at %s%n", product.getId(), machine.getName());
                     iterator.remove();
@@ -100,4 +100,9 @@ public class ProductionLine {
     public String getName() {
         return name;
     }
+
+    protected boolean isProductScrapped(Product product) {
+    return random.nextDouble() < 0.10;
+}
+
 }

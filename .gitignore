@@ -1,0 +1,49 @@
+# Maven
+/target/
+!.mvn/wrapper/maven-wrapper.jar
+.mvn/timing.properties
+/logs/
+
+# IntelliJ
+.idea/
+*.iml
+*.iws
+out/
+
+# Eclipse
+*.classpath
+*.project
+*.settings/
+
+# VS Code
+.vscode/
+
+# macOS
+.DS_Store
+
+# Linux
+*~
+
+# Logs and dumps
+*.log
+*.dump
+hs_err_pid*
+
+# Nix
+result/
+.shellcheck*
+*.drv
+*.lock
+.nix-channels
+.cache/
+.envrc
+
+# Test reports
+/surefire-reports/
+/jacoco.exec
+/test-output/
+
+# Misc
+*.swp
+*.bak
+*.tmp
