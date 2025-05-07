@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Random;
 
 public class ProductionLine {
+
     private final String name;
     private final List<Machine> machines;
     private final List<Product> products;
@@ -27,6 +28,7 @@ public class ProductionLine {
 
     public void addMachine(Machine machine) {
         machines.add(machine);
+        System.out.printf("🏭 %s added to %s%n", machine, name);
     }
 
     public void feedProduct(Product product) {
@@ -40,30 +42,30 @@ public class ProductionLine {
         Iterator<Product> iterator = products.iterator();
         while (iterator.hasNext()) {
             Product product = iterator.next();
-            int step = product.getStep();
 
-            if (step < machines.size()) {
-                Machine machine = machines.get(step);
+            if (!product.isFinished()) {
+                String machineName = product.getCurrentMachineName();
+                Machine machine = findMachineByName(machineName);
                 machine.update();
 
-                // 💥 Simulate scrap with 10% chance
-                boolean isScrapped = isProductScrapped(product);
-                if (isScrapped) {
-                    System.out.printf("❌ %s scrapped at %s%n", product.getId(), machine.getName());
-                    iterator.remove();
+                // Simulate scrap with reason
+                String scrapReason = getScrapReason(product);
+                if (scrapReason != null) {
+                    System.out.printf("❌ %s scrapped at %s — reason: %s%n", product.getId(), machine.getName(), scrapReason);
                     scrappedProducts.add(product);
+                    iterator.remove();
                     totalScrapped++;
                     continue;
                 }
 
                 product.advanceStep();
-                System.out.printf("🔄 %s processed by %s → step %d%n",
-                        product.getId(), machine.getName(), product.getStep());
+                System.out.printf("🔄 %s processed by %s → next step: %s%n",
+                        product.getId(), machine.getName(), product.getCurrentMachineName());
             } else {
                 System.out.printf("✅ %s completed processing.%n", product.getId());
-                iterator.remove();
                 product.markCompleted();
                 completedProducts.add(product);
+                iterator.remove();
                 totalProduced++;
             }
         }
@@ -71,6 +73,21 @@ public class ProductionLine {
         System.out.println("📊 Current Line Metrics:");
         System.out.printf("   ✔️ Produced: %d%n", totalProduced);
         System.out.printf("   ❌ Scrapped: %d%n", totalScrapped);
+    }
+
+// Extracted method for scrap reason (null = not scrapped)
+    protected String getScrapReason(Product product) {
+        if (random.nextDouble() < 0.10) {
+            return "RandomFailure";
+        }
+        return null;
+    }
+
+    private Machine findMachineByName(String name) {
+        return machines.stream()
+                .filter(m -> m.getName().equalsIgnoreCase(name))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("Machine not found: " + name));
     }
 
     public boolean isProcessingComplete() {
@@ -102,7 +119,6 @@ public class ProductionLine {
     }
 
     protected boolean isProductScrapped(Product product) {
-    return random.nextDouble() < 0.10;
-}
-
+        return random.nextDouble() < 0.10;
+    }
 }

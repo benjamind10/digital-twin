@@ -1,19 +1,23 @@
 package com.example.digitaltwin.core;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.UUID;
 
 public class Product {
     private final String id;
     private final String type;
-    private int step;
     private final Instant createdAt;
     private Instant completedAt;
 
-    public Product(String type) {
+    private final List<String> route;
+    private int currentStep;
+
+    public Product(String type, List<String> route) {
         this.id = UUID.randomUUID().toString();
         this.type = type;
-        this.step = 0;
+        this.route = route;
+        this.currentStep = 0;
         this.createdAt = Instant.now();
     }
 
@@ -25,14 +29,6 @@ public class Product {
         return type;
     }
 
-    public int getStep() {
-        return step;
-    }
-
-    public void advanceStep() {
-        this.step++;
-    }
-
     public Instant getCreatedAt() {
         return createdAt;
     }
@@ -41,16 +37,28 @@ public class Product {
         return completedAt;
     }
 
-    public void markCompleted() {
-        this.completedAt = Instant.now();
-    }
-
     public boolean isCompleted() {
         return completedAt != null;
     }
 
+    public void markCompleted() {
+        this.completedAt = Instant.now();
+    }
+
+    public String getCurrentMachineName() {
+        return currentStep < route.size() ? route.get(currentStep) : null;
+    }
+
+    public void advanceStep() {
+        this.currentStep++;
+    }
+
+    public boolean isFinished() {
+        return currentStep >= route.size();
+    }
+
     @Override
     public String toString() {
-        return String.format("Product[id=%s, type=%s, step=%d]", id, type, step);
+        return String.format("Product[id=%s, type=%s, step=%d/%d]", id, type, currentStep, route.size());
     }
 }

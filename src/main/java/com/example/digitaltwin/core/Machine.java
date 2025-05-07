@@ -1,9 +1,9 @@
 package com.example.digitaltwin.core;
 
+import java.util.UUID;
+
 import com.example.digitaltwin.event.MachineEvent;
 import com.example.digitaltwin.event.StateChangeEvent;
-
-import java.util.UUID;
 
 public class Machine {
     public enum State {
@@ -45,4 +45,10 @@ public class Machine {
         }
         return null;
     }
+
+    @Override
+    public String toString() {
+        return String.format("Machine[name=%s, id=%s, state=%s]", name, id, currentState);
+    }
+
 }

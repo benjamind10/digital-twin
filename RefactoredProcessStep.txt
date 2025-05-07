@@ -1,0 +1,46 @@
+public void processStep() {
+    System.out.printf("📦 %s running process step...%n", name);
+
+    Iterator<Product> iterator = products.iterator();
+    while (iterator.hasNext()) {
+        Product product = iterator.next();
+
+        if (!product.isFinished()) {
+            String machineName = product.getCurrentMachineName();
+            Machine machine = findMachineByName(machineName);
+            machine.update();
+
+            // Simulate scrap with reason
+            String scrapReason = getScrapReason(product);
+            if (scrapReason != null) {
+                System.out.printf("❌ %s scrapped at %s — reason: %s%n", product.getId(), machine.getName(), scrapReason);
+                scrappedProducts.add(product);
+                iterator.remove();
+                totalScrapped++;
+                continue;
+            }
+
+            product.advanceStep();
+            System.out.printf("🔄 %s processed by %s → next step: %s%n",
+                product.getId(), machine.getName(), product.getCurrentMachineName());
+        } else {
+            System.out.printf("✅ %s completed processing.%n", product.getId());
+            product.markCompleted();
+            completedProducts.add(product);
+            iterator.remove();
+            totalProduced++;
+        }
+    }
+
+    System.out.println("📊 Current Line Metrics:");
+    System.out.printf("   ✔️ Produced: %d%n", totalProduced);
+    System.out.printf("   ❌ Scrapped: %d%n", totalScrapped);
+}
+
+// Extracted method for scrap reason (null = not scrapped)
+protected String getScrapReason(Product product) {
+    if (random.nextDouble() < 0.10) {
+        return "RandomFailure";
+    }
+    return null;
+}
